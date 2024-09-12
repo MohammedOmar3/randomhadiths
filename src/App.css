@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Sen:wght@400..800&display=swap');
+
+#root, html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    box-sizing: border-box;
+    font-family: 'Sen', sans-serif;
+}
+
+.app {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65); /* Black transparent overlay */
+    z-index: 1;
+}
+
+.card {
+    width: 70%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2%;
+    position: relative;
+    z-index: 2; /* Ensure card is above overlay */
+    color: white;
+}
+
+.book, .content {
+    color: white;
+}
+
+h4, h3, h2, h5 {
+    margin: 10px 0;
+}
+
+/* Button container for fixed bottom positioning */
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Increased gap between buttons */
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.button-next {
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    margin: 0 40px;
+}
+
+.button {
+    outline: none;
+    text-decoration: none;
+    background: none; /* Remove button background */
+    border: none;
+    color: white; /* White button text */
+    cursor: pointer;
+    font-size: 18px; /* Larger text */
+    padding: 0 20px; /* Increase padding to avoid word wrap */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Initial text shadow */
+    transition: text-shadow 0.3s ease; /* Smooth transition for hover effect */
+    width: auto; /* Ensure buttons auto-size based on content */
+    white-space: nowrap; /* Prevent text wrapping */
+    font-size: 15px;
+}
+
+.button:hover {
+    text-shadow: 10px 10px 16px rgba(0, 0, 0, 0.9); /* Bigger shadow on hover */
+}
+
+.button span {
+    margin: 0 10px;
+    text-transform: none; /* Make text uncapitalized */
+}
+
+/* Style for the vertical line separator between buttons */
+.separator {
+    color: white;
+    font-size: 18px;
+}
+
+/* Hadith content styles */
+.hadith-header {
+    font-size: 14px;
+    text-align: left; /* Align text to the left */
+    width: 100%; /* Full width of the card */
+    margin-bottom: 10px; /* Space between header and content */
+    font-weight: 100;
+}
+
+.book p, .bookName p, .chapterName p {
+    font-size: 12px; /* Decrease font size */
+    font-weight: 300; /* Decrease font weight */
+    margin: 2px 0; /* Decrease gap between items */
+}
+
+.book {
+    margin-bottom: 25px;
+}
+
+.content p {
+    text-align: left;
+    font-size: 25px; /* Increase font size for content */
+    margin: 10px 0; /* Space around the content */
+    font-weight: 500;
+}
+
+.hadith-ref {
+    text-align: right; /* Align text to the right */
+    width: 100%; /* Full width of the card */
+    margin-top: 10px; /* Space between content and reference */
+    font-weight: 100; /* Decrease font weight */
+}
+
+/* Button for Next functionality */
+.next-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: transparent;
+    border: 1px solid white;
+    cursor: pointer;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    transition: text-shadow 0.3s ease;
+    border-radius: 5px;
+    outline: none;
+    width: auto;
+    white-space: nowrap;
+}
+
+.next-button:hover {
+    text-shadow: 10px 10px 16px rgba(0, 0, 0, 0.9);
+}
+
+/* Fixed position dropdown container at the bottom */
+.dropdown-container {
+    position: fixed; /* Fix position to the viewport */
+    bottom: 20px; /* Distance from the bottom */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%; /* Full width of the viewport */
+    max-width: 400%; /* Limit maximum width if desired */
+    z-index: 2; /* Ensure it is above other elements */
+}
+
+.dropdown-label {
+    font-size: 16px;
+    color: white;
+    margin-right: 10px; /* Space between label and dropdown */
+}
+
+.dropdown {
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 1px solid white;
+    border-radius: 4px;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Optional: add shadow for better visibility */
+    width: 100%; /* Expand to full width of container */
+}
+
+.dropdown option {
+    background-color: black;
+    color: white;
+}
