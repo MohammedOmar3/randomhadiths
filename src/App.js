@@ -1,92 +1,154 @@
 import React from 'react';
 import './App.css';
 import axios from 'axios';
+import SkeletonLoader from './Components/SkeletonLoader/SkeletonLoader';
+import Navbar from './Components/Navbar/Navbar';
 
 class App extends React.Component {
     state = { 
-        hadith: {},
+        hadith: null, // Start as null to display loader initially
         hadithbook: 'bukhari',
-        background: ''
+        summary: '',
+        background: '', // Background image URL
+        newBackground: '', // New background image URL for transition
+        loading: true, // Indicate loading state
     };
 
-    componentDidMount() {
-        this.fetchHadith(); // Initial call
+    async componentDidMount() {
+        await this.loadData();
     }
 
-    fetchBackground = () => {
-        axios.get('https://api.unsplash.com/photos/?client_id=VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54')
-            .then((response) => {
-                if (response.data) {
-                    const randomIndex = Math.floor(Math.random() * response.data.length);
-                    const url = response.data[randomIndex].urls.full;
-                    this.setState({ background: url });
-                }
-            })
-            .catch((error) => {
-                console.log('Error fetching background:', error);
-            });
-    };
+    loadData = async () => {
+        try {
+            this.setState({ loading: true });
 
-    fetchHadith = () => {
-        axios.get(`https://random-hadith-generator.vercel.app/${this.state.hadithbook}`)
-            .then((response) => {
-                const hadith = response.data.data;
-                // Check if hadith_english is too long
-                if (hadith.hadith_english && hadith.hadith_english.length > 500) { // Example length check, adjust as needed
-                    this.fetchHadith(); // Retry fetching if too long
-                } else {
-                    this.setState({ hadith }, () => {
-                        this.fetchBackground(); // Fetch new background after hadith is updated
+            // Fetch both background and Hadith data in parallel
+            await Promise.all([this.fetchHadith(), this.fetchBackground()]);
+        } catch (error) {
+            console.error('Error loading data:', error);
+        } finally {
+            this.setState({ loading: false });
+        }
+    }
+
+    summarizeText = async (text) => {
+        try {
+            const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+                model: 'gpt-4o-mini',
+                prompt: `Summarize this text in 1-3 words: ${text}`,
+                max_tokens: 10,
+                temperature: 0.5
+            }, {
+                headers: {
+                    'Authorization': `Bearer YOUR_API_KEY`, // Replace with your actual API key
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log(response.data.choices[0].text.trim());
+            this.setState({ summary: response.data.choices[0].text.trim() });
+        } catch (error) {
+            console.error('Error summarizing text:', error.response || error);
+        }
+    };
+    
+    fetchBackground = async () => {
+        try {
+            this.setState({ fadeOut: true }); // Trigger fade-out effect
+    
+            // Wait for the fade-out effect to complete
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Match the duration of the CSS transition
+    
+            const response = await axios.get('https://api.unsplash.com/photos/?client_id=VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54'); // Replace with your actual Unsplash API client ID
+            if (response.data.length > 0) {
+                const randomIndex = Math.floor(Math.random() * response.data.length);
+                const url = response.data[randomIndex].urls.full;
+    
+                // Preload the image
+                const img = new Image();
+                img.src = url;
+    
+                img.onload = () => {
+                    this.setState({ newBackground: url }, () => {
+                        this.setState({ background: this.state.newBackground, fadeOut: false }); // Apply new background and trigger fade-in
                     });
-                }
-            })
-            .catch((error) => {
-                console.log('Error fetching hadith:', error);
-            });
+                };
+            }
+        } catch (error) {
+            console.error('Error fetching background:', error);
+        }
     };
 
-    handleBookChange = (event) => {
-        this.setState({ hadithbook: event.target.value }, this.fetchHadith);
+    fetchHadith = async () => {
+        try {
+            const response = await axios.get(`https://random-hadith-generator.vercel.app/${this.state.hadithbook}`);
+            const hadith = response.data.data;
+            if (hadith.hadith_english && hadith.hadith_english.length > 500) {
+                // Retry fetching if hadith is too long
+                await this.fetchHadith();
+            } else {
+                this.setState({ hadith });
+                this.summarizeText(hadith.hadith_english);
+            }
+        } catch (error) {
+            console.error('Error fetching hadith:', error);
+        }
     };
 
-    toggleDropdown = () => {
-        this.setState(prevState => ({ showDropdown: !prevState.showDropdown }));
+    handleBookChange = async (event) => {
+        this.setState({ hadithbook: event.target.value, loading: true });
+        await this.loadData();
     };
 
     render() { 
-        const { hadith, background } = this.state;
-
+        const { hadith, background, loading } = this.state;
+    
         return (
-            <div 
-                className="app"
-                style={{
-                    backgroundImage: `url(${background})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                    height: '100vh',
-                    position: 'relative'
-                }}
-            >
+            <div className="app">
+                <Navbar />
+                <div 
+                    className={`background-wrapper ${this.state.fadeOut ? 'fade-out' : 'fade-in'}`}
+                    style={{ backgroundImage: `url(${background})` }}
+                    // Add a class to trigger fade effect
+                ></div>
+    
                 <div className="overlay"></div>
 
+    
                 <div className="card">
-                    <div className="book">
-                        {hadith.book && <p>{hadith.book}</p>}
-                        {hadith.bookName && <p>{hadith.bookName}</p>}
-                        {hadith.chapterName && <p>{hadith.chapterName}</p>}
-                    </div>
-
-                    <p className="hadith-header">{hadith.header}</p>
-
-                    <div className="content">
-                        {hadith.hadith_english && <p>{hadith.hadith_english}</p>}
-                    </div>
-
-                    <p className="hadith-ref">{hadith.refno}</p>
-
+                    {loading || !hadith ? (
+                        <div>
+                            <div className='skeleton-container-header'>
+                                <SkeletonLoader width="200px" height="14px" borderRadius="2px" />
+                                <SkeletonLoader width="200px" height="14px" borderRadius="2px" />
+                                <SkeletonLoader width="200px" height="14px" borderRadius="2px" />
+                            </div>
+                            <div className="skeleton-container">
+                                <SkeletonLoader width="20%" height="14px" borderRadius="2px" />
+                                <SkeletonLoader width="1050px" height="14px" borderRadius="2px" />
+                                <SkeletonLoader width="100%" height="14px" borderRadius="2px" />
+                                <SkeletonLoader width="100%" height="14px" borderRadius="2px" />
+                                <SkeletonLoader className="skeleton-right" width="20%" height="14px" borderRadius="2px" />
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="book">
+                                {hadith.book && <p>{hadith.book}</p>}
+                                {hadith.bookName && <p>{hadith.bookName}</p>}
+                                {hadith.chapterName && <p>{hadith.chapterName}</p>}
+                            </div>
+    
+                            <p className="hadith-header">{hadith.header}</p>
+    
+                            <div className="content">
+                                {hadith.hadith_english && <p>{hadith.hadith_english}</p>}
+                            </div>
+    
+                            <p className="hadith-ref">{hadith.refno}</p>
+                        </>
+                    )}
                     <div className="dropdown-container">
-                    <button className='next-button' onClick={() => this.fetchHadith()}>Next Hadith</button>
+                        <button className='next-button' onClick={() => this.handleBookChange({ target: { value: this.state.hadithbook } })}>Next Hadith</button>
                         <label htmlFor="hadithbook" className="dropdown-label"></label>
                         <select id="hadithbook" className="dropdown" onChange={this.handleBookChange} value={this.state.hadithbook}>
                             <option value="bukhari">Sahih Al-Bukhari</option>
