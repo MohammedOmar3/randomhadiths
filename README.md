@@ -2,6 +2,8 @@
 
 This project is a simple web application that fetches Hadiths (sayings of the Prophet Muhammad) from an Open API source and displays them in English.
 
+![image](https://github.com/user-attachments/assets/d7ab6b27-8a47-424b-abcc-bcfaeacd6bd6)
+
 ## Features
 
 - Fetches Hadiths from four sources: Sahih Bukhari, Sahih Muslim, Abu Dawud, Ibn Majah, Al-Tirmidhi
