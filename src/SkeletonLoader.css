@@ -1,45 +1,33 @@
+/* Container for the skeleton loader */
 .skeleton-loader {
-    background-color: #555; /* Darker base color */
-    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
-    overflow: hidden;
-    animation: pulse 1.5s ease-in-out infinite;
   }
   
-  .skeleton-loader::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -150%; /* Start off-screen */
+  /* Pulsing animation for the image */
+  .pulsing-image {
+    filter: brightness(0) invert(1);
+    width: 100%;
     height: 100%;
-    width: 150%; /* Large enough to cover */
-    background: linear-gradient(
-      90deg,
-      rgba(212, 212, 212, 0) 0%,
-      rgba(216, 216, 216, 0.5) 50%, /* Increased opacity for better visibility */
-      rgba(0, 0, 0, 0) 100%
-    );
-    animation: slide 1.5s ease-in-out infinite;
+    object-fit: cover; /* Ensures image covers the container */
+    animation: pulse 1.5s infinite; /* Apply the pulse animation */
   }
   
+  /* Keyframes for pulsing animation */
   @keyframes pulse {
     0% {
-      background-color: #777; /* Darker base color */
+      opacity: 0.5; /* Start with lower opacity */
+      transform: scale(1); /* Start at original size */
     }
     50% {
-      background-color: #555; /* Slightly lighter to create a noticeable pulse effect */
+      opacity: 1; /* Full opacity at halfway point */
+      transform: scale(1.05); /* Slightly increase size */
     }
     100% {
-      background-color: #777; /* Return to the base color */
-    }
-  }
-  
-  @keyframes slide {
-    0% {
-      left: -150%; /* Start off-screen */
-    }
-    100% {
-      left: 150%; /* Slide to the end */
+      opacity: 0.5; /* End with lower opacity */
+      transform: scale(1); /* Return to original size */
     }
   }
   

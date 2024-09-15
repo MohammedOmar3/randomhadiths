@@ -3,6 +3,7 @@ import './App.css';
 import axios from 'axios';
 import SkeletonLoader from './Components/SkeletonLoader/SkeletonLoader';
 import Navbar from './Components/Navbar/Navbar';
+import loaderImage from './images/loader.png';
 
 class App extends React.Component {
     state = { 
@@ -105,6 +106,7 @@ class App extends React.Component {
         return (
             <div className="app">
                 <Navbar />
+
                 <div 
                     className={`background-wrapper ${this.state.fadeOut ? 'fade-out' : 'fade-in'}`}
                     style={{ backgroundImage: `url(${background})` }}
@@ -117,18 +119,7 @@ class App extends React.Component {
                 <div className="card">
                     {loading || !hadith ? (
                         <div>
-                            <div className='skeleton-container-header'>
-                                <SkeletonLoader width="200px" height="14px" borderRadius="2px" />
-                                <SkeletonLoader width="200px" height="14px" borderRadius="2px" />
-                                <SkeletonLoader width="200px" height="14px" borderRadius="2px" />
-                            </div>
-                            <div className="skeleton-container">
-                                <SkeletonLoader width="20%" height="14px" borderRadius="2px" />
-                                <SkeletonLoader width="1050px" height="14px" borderRadius="2px" />
-                                <SkeletonLoader width="100%" height="14px" borderRadius="2px" />
-                                <SkeletonLoader width="100%" height="14px" borderRadius="2px" />
-                                <SkeletonLoader className="skeleton-right" width="20%" height="14px" borderRadius="2px" />
-                            </div>
+                            <SkeletonLoader src={loaderImage} width="200px" height="200px" borderRadius="2px" />
                         </div>
                     ) : (
                         <>
