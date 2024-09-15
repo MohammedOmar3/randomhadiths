@@ -59,7 +59,14 @@ class App extends React.Component {
             // Wait for the fade-out effect to complete
             await new Promise(resolve => setTimeout(resolve, 1000)); // Match the duration of the CSS transition
     
-            const response = await axios.get('https://api.unsplash.com/photos/?client_id=VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54'); // Replace with your actual Unsplash API client ID
+            const response = await axios.get('https://api.unsplash.com/photos/random', {
+                params: {
+                  client_id: 'VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54',
+                  query: 'nature, architecture, islam, nature wonders',
+                  count: 1         
+                }
+            });
+            console.log(response.data);
             if (response.data.length > 0) {
                 const randomIndex = Math.floor(Math.random() * response.data.length);
                 const url = response.data[randomIndex].urls.full;
