@@ -18,7 +18,9 @@ This project is a simple web application that fetches Hadiths (sayings of the Pr
 - Copy the hadith on screen to clipboard which can be pasted anywhere.
 - Website is responsive to all devices with all functionality working from any device that you use.
 
-
 ## Upcoming Features
 - Share the hadith, but setting hadith id on the url which will load up that hadith on open.
 - Match the background with the context of the hadith using API
+
+## Bug
+- Filtering the hadith book will not search the hadith of the book it's been filtered to but the book previously set. This will need to be fixed so that the hadith of the book is fetched when new book has been chosen. 
