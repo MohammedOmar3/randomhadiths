@@ -1,22 +1,22 @@
 import React from 'react';
-import downloadIcon from '../../images/download.png'; // Adjust the path as necessary
-import shareIcon from '../../images/share.png'; // Adjust the path as necessary
-import copyIcon from '../../images/screenshot.png'; // Adjust the path as necessary
+import downloadIcon from '../../images/download.png'; 
+import shareIcon from '../../images/share.png'; 
+import copyIcon from '../../images/copy.png'; 
 
-const Navbar = () => {
+const Navbar = ({ onDownload, onShare, onCopy }) => {
   return (
     <div className="navbar">
-      <span>nstxo.com</span>
-      <div className="functions">
-        <a href="#home">
-          <img src={downloadIcon} alt="Home" className="navbar-icon" />
-        </a>
-        <a href="#about">
-          <img src={shareIcon} alt="About" className="navbar-icon" />
-        </a>
-        <a href="#contact">
-          <img src={copyIcon} alt="Contact" className="navbar-icon" />
-        </a>
+      <span className="navbar-text">nstxo.com</span>
+      <div className="functions navbar-buttons">
+        <button onClick={onDownload} className="navbar-icon-button">
+          <img src={downloadIcon} alt="Download" className="navbar-icon" />
+        </button>
+        <button onClick={onShare} className="navbar-icon-button">
+          <img src={shareIcon} alt="Share" className="navbar-icon" />
+        </button>
+        <button onClick={onCopy} className="navbar-icon-button">
+          <img src={copyIcon} alt="Copy" className="navbar-icon" />
+        </button>
       </div>
     </div>
   );

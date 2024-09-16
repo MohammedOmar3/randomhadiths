@@ -5,6 +5,7 @@ import SkeletonLoader from './Components/SkeletonLoader/SkeletonLoader';
 import Navbar from './Components/Navbar/Navbar';
 import loaderImage from './images/loader.png';
 import filterIcon from './images/filter.png'; 
+import html2canvas from 'html2canvas';
 
 class App extends React.Component {
     state = { 
@@ -20,7 +21,8 @@ class App extends React.Component {
         isHadithReady: false,
         filterOpen: false, 
         availableLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'], 
-        selectedLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'] 
+        selectedLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'],
+        isFlashing: false
     };
 
     async componentDidMount() {
@@ -40,14 +42,14 @@ class App extends React.Component {
 
     summarizeText = async (text) => {
         try {
-            const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+            const response = await axios.post(process.env.REACT_APP_OPENAI_API_URL, {
                 model: 'gpt-4o-mini',
                 prompt: `Summarize this text in 1-3 words: ${text}`,
                 max_tokens: 10,
                 temperature: 0.5
             }, {
                 headers: {
-                    'Authorization': `Bearer YOUR_API_KEY`,
+                    'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -59,12 +61,10 @@ class App extends React.Component {
     };
 
     fetchBackgroundsIfNeeded = async () => {
-        // Fetch 10 new backgrounds if less than 2 are available
         console.log(this.state.backgrounds.length);
         if (this.state.backgrounds.length < 2) {
             await this.fetchBackgrounds();
         } else {
-            // Set the next background from the array
             const nextBackground = this.state.backgrounds.shift();
             this.setBackgroundWithFade(nextBackground);
         }
@@ -89,9 +89,9 @@ class App extends React.Component {
 
     fetchBackgrounds = async () => {
         try {
-            const response = await axios.get('https://api.unsplash.com/photos/random', {
+            const response = await axios.get(process.env.REACT_APP_UNSPLASH_API_URL, {
                 params: {
-                    client_id: 'VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54',
+                    client_id: process.env.REACT_APP_UNSPLASH_API_KEY,
                     query: 'nature, architecture, islam, nature wonders',
                     count: 10 
                 }
@@ -111,13 +111,14 @@ class App extends React.Component {
 
     fetchHadith = async () => {
         try {
-            const response = await axios.get(`https://random-hadith-generator.vercel.app/${this.state.hadithbook}`);
+            const response = await axios.get(`${process.env.REACT_APP_HADITH_API_URL}/${this.state.hadithbook}`);
             const hadith = response.data.data;
             console.log(response.data.data.id);
             if (hadith.hadith_english && hadith.hadith_english.length > 500) {
                 await this.fetchHadith();
             } else {
-                this.setState({ hadithId: response.data.data.id, hadith });
+
+                this.setState({ hadithid: response.data.data.id, hadith });
                 this.summarizeText(hadith.hadith_english);
             }
         } catch (error) {
@@ -145,12 +146,58 @@ class App extends React.Component {
         });
     }
 
+    downloadSnapshot = () => {
+        const elementsToHide = [
+            document.querySelector('.filter-button-container'),
+            document.querySelector('.dropdown-container'),
+            document.querySelector('.navbar-buttons')
+        ];
+    
+        elementsToHide.forEach(el => {
+            if (el) el.classList.add('hide-for-snapshot');
+        });
+    
+        const backgroundWrapper = document.querySelector('.background-wrapper');
+        if (backgroundWrapper) {
+            backgroundWrapper.style.opacity = '1';
+        }
+    
+        this.setState({ isFlashing: true }, () => {
+            setTimeout(() => {
+                this.setState({ isFlashing: false });
+    
+                html2canvas(document.querySelector('.app'), {
+                    backgroundColor: null,
+                    useCORS: true,
+                    scale: 3,
+                    width: document.querySelector('.app').offsetWidth,
+                    height: document.querySelector('.app').offsetHeight
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = `${this.state.hadithbook}_${this.state.hadithid}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                
+                    elementsToHide.forEach(el => {
+                        if (el) el.classList.remove('hide-for-snapshot');
+                    });
+                
+                    if (backgroundWrapper) {
+                        backgroundWrapper.style.opacity = '';
+                    }
+                });
+            }, 300);
+        });
+    };
+
     render() {
         const { hadith, background, loading, isBackgroundLoading, isHadithReady, filterOpen, availableLabels, selectedLabels } = this.state;
     
         return (
             <div className="app">
-                <Navbar />
+                <Navbar onDownload={this.downloadSnapshot} />
     
                 <div 
                     className={`background-wrapper ${isBackgroundLoading ? 'fade-out' : 'fade-in'}`}
@@ -158,6 +205,8 @@ class App extends React.Component {
                 ></div>
     
                 <div className="overlay"></div>
+
+                <div className={`flash-overlay ${this.state.isFlashing ? 'active' : ''}`}></div> {/* Flash overlay */}
     
                 <div className="card">
                     {loading || !hadith || !isHadithReady ? (
