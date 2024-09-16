@@ -7,12 +7,15 @@ import loaderImage from './images/loader.png';
 
 class App extends React.Component {
     state = { 
+        hadithid: '',
         hadith: null, // Start as null to display loader initially
         hadithbook: 'bukhari',
         summary: '',
         background: '', // Background image URL
         newBackground: '', // New background image URL for transition
-        loading: true, // Indicate loading state
+        backgrounds: [], // Store an array of backgrounds
+        loading: true, // Indicate loading state for both hadith and background
+        isBackgroundLoading: false, // Track background loading for fade-in
     };
 
     async componentDidMount() {
@@ -24,7 +27,7 @@ class App extends React.Component {
             this.setState({ loading: true });
 
             // Fetch both background and Hadith data in parallel
-            await Promise.all([this.fetchHadith(), this.fetchBackground()]);
+            await Promise.all([this.fetchHadith(), this.fetchBackgroundsIfNeeded()]);
         } catch (error) {
             console.error('Error loading data:', error);
         } finally {
@@ -51,36 +54,56 @@ class App extends React.Component {
             console.error('Error summarizing text:', error.response || error);
         }
     };
+
+    fetchBackgroundsIfNeeded = async () => {
+        // Fetch 10 new backgrounds if less than 2 are available
+        console.log(this.state.backgrounds.length);
+        if (this.state.backgrounds.length < 2) {
+            await this.fetchBackgrounds();
+        } else {
+            // Set the next background from the array
+            const nextBackground = this.state.backgrounds.shift();
+            this.setBackgroundWithFade(nextBackground);
+        }
+    };
+
+    setBackgroundWithFade = (url) => {
+        const img = new Image();
+        img.src = url;
     
-    fetchBackground = async () => {
+        // Start fading out the current background
+        this.setState({ isBackgroundLoading: true, isHadithReady: false }); // Start fade-out transition
+    
+        img.onload = () => {
+            // Wait for the fade-out to complete before showing the new background and the hadith
+            setTimeout(() => {
+                this.setState({
+                    background: url,  // Set the new background once preloaded
+                    isBackgroundLoading: false,  // End fade-in transition
+                    isHadithReady: true,  // Mark hadith ready to display
+                });
+            }, 1000); // Wait 1 second for fade-out before loading new background
+        };
+    };
+
+    fetchBackgrounds = async () => {
         try {
-            this.setState({ fadeOut: true }); // Trigger fade-out effect
-    
-            // Wait for the fade-out effect to complete
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Match the duration of the CSS transition
-    
             const response = await axios.get('https://api.unsplash.com/photos/random', {
                 params: {
-                  client_id: 'VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54',
-                  query: 'nature, architecture, islam, nature wonders',
-                  count: 1         
+                    client_id: 'VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54',
+                    query: 'nature, architecture, islam, nature wonders',
+                    count: 10 // Fetch 10 new backgrounds
                 }
             });
-            console.log(response.data);
-            if (response.data.length > 0) {
-                const randomIndex = Math.floor(Math.random() * response.data.length);
-                const url = response.data[randomIndex].urls.full;
-    
-                // Preload the image
-                const img = new Image();
-                img.src = url;
-    
-                img.onload = () => {
-                    this.setState({ newBackground: url }, () => {
-                        this.setState({ background: this.state.newBackground, fadeOut: false }); // Apply new background and trigger fade-in
-                    });
-                };
-            }
+            const backgrounds = response.data.map(img => img.urls.full);
+            console.log('Fetched backgrounds:', backgrounds);
+
+            // Set the first background, then add the rest to the state
+            const nextBackground = backgrounds.shift(); // Take the first one
+            this.setBackgroundWithFade(nextBackground);
+            this.setState({ 
+                backgrounds: [...this.state.backgrounds, ...backgrounds], // Append new backgrounds to the array
+            });
         } catch (error) {
             console.error('Error fetching background:', error);
         }
@@ -90,11 +113,12 @@ class App extends React.Component {
         try {
             const response = await axios.get(`https://random-hadith-generator.vercel.app/${this.state.hadithbook}`);
             const hadith = response.data.data;
+            console.log(response.data.data.id);
             if (hadith.hadith_english && hadith.hadith_english.length > 500) {
                 // Retry fetching if hadith is too long
                 await this.fetchHadith();
             } else {
-                this.setState({ hadith });
+                this.setState({ hadithId: response.data.data.id, hadith });
                 this.summarizeText(hadith.hadith_english);
             }
         } catch (error) {
@@ -108,23 +132,23 @@ class App extends React.Component {
     };
 
     render() { 
-        const { hadith, background, loading } = this.state;
+        const { hadith, background, loading, isBackgroundLoading, isHadithReady } = this.state;
     
         return (
             <div className="app">
                 <Navbar />
-
+    
+                {/* Background wrapper with fade effect */}
                 <div 
-                    className={`background-wrapper ${this.state.fadeOut ? 'fade-out' : 'fade-in'}`}
+                    className={`background-wrapper ${isBackgroundLoading ? 'fade-out' : 'fade-in'}`}
                     style={{ backgroundImage: `url(${background})` }}
-                    // Add a class to trigger fade effect
                 ></div>
     
                 <div className="overlay"></div>
-
     
                 <div className="card">
-                    {loading || !hadith ? (
+                    {/* Only show content when hadith and background are both ready */}
+                    {loading || !hadith || !isHadithReady ? (
                         <div>
                             <SkeletonLoader src={loaderImage} width="200px" height="200px" borderRadius="2px" />
                         </div>
@@ -136,15 +160,16 @@ class App extends React.Component {
                                 {hadith.chapterName && <p>{hadith.chapterName}</p>}
                             </div>
     
-                            <p className="hadith-header">{hadith.header}</p>
+                            {hadith.header && <p className="hadith-header">{hadith.header}</p>}
     
                             <div className="content">
                                 {hadith.hadith_english && <p>{hadith.hadith_english}</p>}
                             </div>
     
-                            <p className="hadith-ref">{hadith.refno}</p>
+                            {hadith.refno && <p className="hadith-ref">{hadith.refno}</p>}
                         </>
                     )}
+    
                     <div className="dropdown-container">
                         <button className='next-button' onClick={() => this.handleBookChange({ target: { value: this.state.hadithbook } })}>Next Hadith</button>
                         <label htmlFor="hadithbook" className="dropdown-label"></label>
@@ -160,6 +185,6 @@ class App extends React.Component {
             </div>
         );
     }
-}
+}    
 
 export default App;

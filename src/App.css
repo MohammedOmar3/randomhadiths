@@ -31,17 +31,13 @@
     opacity: 0; /* Initially hidden */
 }
 
-.background-wrapper.show {
+.background-wrapper.fade-in {
     opacity: 1; /* Fade in */
+    transition: opacity 1s ease-in-out;
 }
 
 .background-wrapper.fade-out {
     opacity: 0; /* Fade out */
-    transition: opacity 1s ease-in-out; /* Ensure transition effect */
-}
-
-.background-wrapper.fade-in {
-    opacity: 1; /* Fade in */
     transition: opacity 1s ease-in-out; /* Ensure transition effect */
 }
 
