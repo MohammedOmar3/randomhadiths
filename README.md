@@ -13,9 +13,11 @@ This project is a simple web application that fetches Hadiths (sayings of the Pr
 - New background for every hadith
 - Skeleton Container for when hadith is being fetched as a loading screen.
 - Smooth Transitions with Background and Hadith
+- Filter to remove or add the content displayed such as chapter, book and etc.
 
 ## Upcoming Features
 
 - Match the background with the context of the hadith using API
 - Snapshot the hadith with the background to be used to shared on social media platforms.
-- Add filter to remove/add some of the content displayed such as chapter, book and etc.
+- Share the hadith, but setting hadith id on the url which will load up that hadith on open.
+- Make website responsive to all type of devices. 

@@ -4,18 +4,23 @@ import axios from 'axios';
 import SkeletonLoader from './Components/SkeletonLoader/SkeletonLoader';
 import Navbar from './Components/Navbar/Navbar';
 import loaderImage from './images/loader.png';
+import filterIcon from './images/filter.png'; 
 
 class App extends React.Component {
     state = { 
         hadithid: '',
-        hadith: null, // Start as null to display loader initially
+        hadith: null,
         hadithbook: 'bukhari',
         summary: '',
-        background: '', // Background image URL
-        newBackground: '', // New background image URL for transition
-        backgrounds: [], // Store an array of backgrounds
-        loading: true, // Indicate loading state for both hadith and background
-        isBackgroundLoading: false, // Track background loading for fade-in
+        background: '',
+        newBackground: '',
+        backgrounds: [],
+        loading: true,
+        isBackgroundLoading: false,
+        isHadithReady: false,
+        filterOpen: false, 
+        availableLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'], 
+        selectedLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'] 
     };
 
     async componentDidMount() {
@@ -25,8 +30,6 @@ class App extends React.Component {
     loadData = async () => {
         try {
             this.setState({ loading: true });
-
-            // Fetch both background and Hadith data in parallel
             await Promise.all([this.fetchHadith(), this.fetchBackgroundsIfNeeded()]);
         } catch (error) {
             console.error('Error loading data:', error);
@@ -44,7 +47,7 @@ class App extends React.Component {
                 temperature: 0.5
             }, {
                 headers: {
-                    'Authorization': `Bearer YOUR_API_KEY`, // Replace with your actual API key
+                    'Authorization': `Bearer YOUR_API_KEY`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -71,18 +74,16 @@ class App extends React.Component {
         const img = new Image();
         img.src = url;
     
-        // Start fading out the current background
-        this.setState({ isBackgroundLoading: true, isHadithReady: false }); // Start fade-out transition
+        this.setState({ isBackgroundLoading: true, isHadithReady: false }); 
     
         img.onload = () => {
-            // Wait for the fade-out to complete before showing the new background and the hadith
             setTimeout(() => {
                 this.setState({
-                    background: url,  // Set the new background once preloaded
-                    isBackgroundLoading: false,  // End fade-in transition
-                    isHadithReady: true,  // Mark hadith ready to display
+                    background: url,  
+                    isBackgroundLoading: false,  
+                    isHadithReady: true,  
                 });
-            }, 1000); // Wait 1 second for fade-out before loading new background
+            }, 1000); 
         };
     };
 
@@ -92,17 +93,16 @@ class App extends React.Component {
                 params: {
                     client_id: 'VO8BCIkrpa1nGGlFMJOPPXFN_xtqNqXbz1ZE3HmYw54',
                     query: 'nature, architecture, islam, nature wonders',
-                    count: 10 // Fetch 10 new backgrounds
+                    count: 10 
                 }
             });
             const backgrounds = response.data.map(img => img.urls.full);
             console.log('Fetched backgrounds:', backgrounds);
 
-            // Set the first background, then add the rest to the state
-            const nextBackground = backgrounds.shift(); // Take the first one
+            const nextBackground = backgrounds.shift(); 
             this.setBackgroundWithFade(nextBackground);
             this.setState({ 
-                backgrounds: [...this.state.backgrounds, ...backgrounds], // Append new backgrounds to the array
+                backgrounds: [...this.state.backgrounds, ...backgrounds], 
             });
         } catch (error) {
             console.error('Error fetching background:', error);
@@ -115,7 +115,6 @@ class App extends React.Component {
             const hadith = response.data.data;
             console.log(response.data.data.id);
             if (hadith.hadith_english && hadith.hadith_english.length > 500) {
-                // Retry fetching if hadith is too long
                 await this.fetchHadith();
             } else {
                 this.setState({ hadithId: response.data.data.id, hadith });
@@ -131,14 +130,28 @@ class App extends React.Component {
         await this.loadData();
     };
 
-    render() { 
-        const { hadith, background, loading, isBackgroundLoading, isHadithReady } = this.state;
+    toggleFilter = () => {
+        this.setState(prevState => ({ filterOpen: !prevState.filterOpen }));
+    }
+
+    handleLabelChange = (label) => {
+        this.setState(prevState => {
+            const { selectedLabels } = prevState;
+            const updatedLabels = selectedLabels.includes(label)
+                ? selectedLabels.filter(l => l !== label)
+                : [...selectedLabels, label];
+    
+            return { selectedLabels: updatedLabels };
+        });
+    }
+
+    render() {
+        const { hadith, background, loading, isBackgroundLoading, isHadithReady, filterOpen, availableLabels, selectedLabels } = this.state;
     
         return (
             <div className="app">
                 <Navbar />
     
-                {/* Background wrapper with fade effect */}
                 <div 
                     className={`background-wrapper ${isBackgroundLoading ? 'fade-out' : 'fade-in'}`}
                     style={{ backgroundImage: `url(${background})` }}
@@ -147,7 +160,6 @@ class App extends React.Component {
                 <div className="overlay"></div>
     
                 <div className="card">
-                    {/* Only show content when hadith and background are both ready */}
                     {loading || !hadith || !isHadithReady ? (
                         <div>
                             <SkeletonLoader src={loaderImage} width="200px" height="200px" borderRadius="2px" />
@@ -155,18 +167,18 @@ class App extends React.Component {
                     ) : (
                         <>
                             <div className="book">
-                                {hadith.book && <p>{hadith.book}</p>}
-                                {hadith.bookName && <p>{hadith.bookName}</p>}
-                                {hadith.chapterName && <p>{hadith.chapterName}</p>}
+                                {selectedLabels.includes('Book') && hadith.book && <p>{hadith.book}</p>}
+                                {selectedLabels.includes('Book Name') && hadith.bookName && <p>{hadith.bookName}</p>}
+                                {selectedLabels.includes('Chapter') && hadith.chapterName && <p>{hadith.chapterName}</p>}
                             </div>
     
-                            {hadith.header && <p className="hadith-header">{hadith.header}</p>}
+                            {selectedLabels.includes('Header') && hadith.header && <p className="hadith-header">{hadith.header}</p>}
     
                             <div className="content">
                                 {hadith.hadith_english && <p>{hadith.hadith_english}</p>}
                             </div>
     
-                            {hadith.refno && <p className="hadith-ref">{hadith.refno}</p>}
+                            {selectedLabels.includes('Ref No.') && hadith.refno && <p className="hadith-ref">{hadith.refno}</p>}
                         </>
                     )}
     
@@ -182,9 +194,30 @@ class App extends React.Component {
                         </select>
                     </div>
                 </div>
+    
+                <div className="filter-button-container">
+                    <button className="filter-button" onClick={this.toggleFilter}>
+                        <img src={filterIcon} alt="Filter" className="filter-icon" />
+                    </button>
+    
+                    {filterOpen && (
+                        <div className="filter-dropdown">
+                            {availableLabels.map(label => (
+                                <label key={label} className="filter-item">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedLabels.includes(label)} 
+                                        onChange={() => this.handleLabelChange(label)} 
+                                    />
+                                    {label}
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }
-}    
+}
 
 export default App;
