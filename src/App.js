@@ -22,7 +22,8 @@ class App extends React.Component {
         filterOpen: false, 
         availableLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'], 
         selectedLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'],
-        isFlashing: false
+        isFlashing: false,
+        notification: '',
     };
 
     async componentDidMount() {
@@ -192,13 +193,58 @@ class App extends React.Component {
         });
     };
 
+    copyToClipboard = () => {
+        const { hadith, selectedLabels } = this.state;
+        let textToCopy = '';
+    
+        const trimContent = (content) => content ? content.trim() : '';
+    
+        if (selectedLabels.includes('Book') && hadith?.book) {
+            textToCopy += `Book: ${trimContent(hadith.book)}\n`;
+        }
+        if (selectedLabels.includes('Book Name') && hadith?.bookName) {
+            textToCopy += `Book Name: ${trimContent(hadith.bookName)}\n`;
+        }
+        if (selectedLabels.includes('Chapter') && hadith?.chapterName) {
+            textToCopy += `Chapter: ${trimContent(hadith.chapterName)}\n`;
+        }
+        if (selectedLabels.includes('Header') && hadith?.header) {
+            textToCopy += `Header: ${trimContent(hadith.header)}\n`;
+        }
+        if (selectedLabels.includes('Ref No.') && hadith?.refno) {
+            textToCopy += `Ref No.: ${trimContent(hadith.refno)}\n`;
+        }
+        if (hadith?.hadith_english) {
+            textToCopy += `Content: ${trimContent(hadith.hadith_english)}\n`;
+        }
+    
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                this.setState({ notification: 'Hadith copied to clipboard!' });
+                setTimeout(() => this.setState({ notification: '' }), 3000);
+            })
+            .catch(err => {
+                this.setState({ notification: 'Error copying to clipboard' });
+                setTimeout(() => this.setState({ notification: '' }), 3000);
+            });
+    };
+
     render() {
-        const { hadith, background, loading, isBackgroundLoading, isHadithReady, filterOpen, availableLabels, selectedLabels } = this.state;
+        const { hadith, background, loading, isBackgroundLoading, isHadithReady, filterOpen, availableLabels, selectedLabels, notification } = this.state;
     
         return (
             <div className="app">
-                <Navbar onDownload={this.downloadSnapshot} />
+                <Navbar 
+                    onDownload={this.downloadSnapshot}
+                    onCopy={this.copyToClipboard}
+                 />
     
+                {notification && (
+                    <div className="notification">
+                        {notification}
+                    </div>
+                )}
+
                 <div 
                     className={`background-wrapper ${isBackgroundLoading ? 'fade-out' : 'fade-in'}`}
                     style={{ backgroundImage: `url(${background})` }}
