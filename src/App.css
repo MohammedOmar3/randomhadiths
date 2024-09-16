@@ -162,10 +162,12 @@
     position: relative;
     z-index: 2; 
     color: white;
+    font-size: calc(1rem + 1vw); /* Scales with viewport width */
 }
 
 .book, .content {
     color: white;
+    font-size: calc(1rem + 1vw); /* Scales with viewport width */
 }
 
 h4, h3, h2, h5 {
@@ -225,7 +227,7 @@ h4, h3, h2, h5 {
 
 /* Hadith content styles */
 .hadith-header {
-    font-size: 14px;
+    font-size: calc(0.6rem + 0.5vw); /* Scales with viewport width */
     text-align: left; 
     width: 100%; 
     margin-bottom: 10px; 
@@ -233,7 +235,7 @@ h4, h3, h2, h5 {
 }
 
 .book p, .bookName p, .chapterName p {
-    font-size: 12px; 
+    font-size: calc(0.6rem + 0.5vw); /* Scales with viewport width */
     font-weight: 300;
     margin: 2px 0; 
 }
@@ -244,12 +246,13 @@ h4, h3, h2, h5 {
 
 .content p {
     text-align: left;
-    font-size: 25px; 
+    font-size: calc(0.7rem + 1vw); /* Scales with viewport width */
     margin: 10px 0; 
     font-weight: 500;
 }
 
 .hadith-ref {
+    font-size: calc(0.6rem + 0.5vw); /* Scales with viewport width */
     text-align: right; 
     width: 100%;
     margin-top: 10px; 
@@ -259,7 +262,7 @@ h4, h3, h2, h5 {
 /* Button for Next functionality */
 .next-button {
     padding: 10px 20px;
-    font-size: 16px;
+    font-size: calc(0.5rem + 0.5vw); /* Scales with viewport width */
     color: white;
     background-color: transparent;
     border: 1px solid white;
@@ -285,19 +288,18 @@ h4, h3, h2, h5 {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 20%; 
-    max-width: 400%;
+    max-width: 100%;
     z-index: 2; 
 }
 
 .dropdown-label {
-    font-size: 16px;
+    font-size: calc(0.5rem + 0.5vw); /* Scales with viewport width */
     color: white;
     margin-right: 10px; 
 }
 
 .dropdown {
-    font-size: 16px;
+    font-size: calc(0.5rem + 0.5vw); /* Scales with viewport width */
     padding: 8px 12px;
     border: 1px solid white;
     border-radius: 4px;
@@ -378,4 +380,74 @@ h4, h3, h2, h5 {
 
 .filter-item input {
     margin-right: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card {
+        width: 95%;
+        padding: 5%;
+    }
+
+    .content {
+        font-size: 10px;
+    }
+
+    .button, .button-next, .next-button {
+        font-size: calc(0.6rem + 0.5vw); /* Scales with viewport width */
+    }
+
+    .navbar a {
+        font-size: 14px;
+        font-size: calc(0.9rem + 0.5vw); /* Scales with viewport width */
+    }
+
+    .notification {
+        top: 130px;
+    }
+
+    .dropdown-container {
+        max-width: 70%;
+    }
+
+    .filter-dropdown {
+        bottom: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        padding-top: 20px;
+        font-size: 14px;
+        font-size: calc(0.8rem + 0.5vw); /* Scales with viewport width */
+    }
+
+    .navbar a {
+        margin-right: 10px;
+    }
+
+    .notification {
+        top: 80px;
+    }
+
+    .card {
+        padding: 4%;
+    }
+
+    .button, .button-next, .next-button {
+        font-size: 12px;
+    }
+
+    .dropdown-container {
+        width: 70%;
+        bottom: 10px;
+    }
+
+    .filter-dropdown {
+        bottom: 60px;
+    }
+
+    .filter-icon {
+        margin-bottom: -10px;
+    }
 }
