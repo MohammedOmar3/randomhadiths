@@ -14,10 +14,11 @@ This project is a simple web application that fetches Hadiths (sayings of the Pr
 - Skeleton Container for when hadith is being fetched as a loading screen.
 - Smooth Transitions with Background and Hadith
 - Filter to remove or add the content displayed such as chapter, book and etc.
+- Snapshot the hadith with the background to be used to shared on social media platforms.
+- Copy the hadith on screen to clipboard which can be pasted anywhere.
+
 
 ## Upcoming Features
-
-- Match the background with the context of the hadith using API
-- Snapshot the hadith with the background to be used to shared on social media platforms.
 - Share the hadith, but setting hadith id on the url which will load up that hadith on open.
 - Make website responsive to all type of devices. 
+- Match the background with the context of the hadith using API
