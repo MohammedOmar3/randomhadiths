@@ -128,8 +128,12 @@ class App extends React.Component {
     };
 
     handleBookChange = async (event) => {
-        this.setState({ hadithbook: event.target.value, loading: true });
-        await this.loadData();
+        const newBook = event.target.value;
+        this.setState({ hadithbook: newBook, loading: true }, async () => {
+            await this.fetchHadith();        // Fetch new hadith
+            await this.fetchBackgroundsIfNeeded();  // Fetch new background
+            this.setState({ loading: false });
+        });
     };
 
     toggleFilter = () => {
@@ -262,23 +266,26 @@ class App extends React.Component {
                     ) : (
                         <>
                             <div className="book">
-                                {selectedLabels.includes('Book') && hadith.book && <p>{hadith.book}</p>}
-                                {selectedLabels.includes('Book Name') && hadith.bookName && <p>{hadith.bookName}</p>}
-                                {selectedLabels.includes('Chapter') && hadith.chapterName && <p>{hadith.chapterName}</p>}
+                                {selectedLabels.includes('Book') && hadith.book && hadith.book.trim() && <p>{hadith.book}</p>}
+                                {selectedLabels.includes('Book Name') && hadith.bookName && hadith.bookName.trim() && <p>{hadith.bookName}</p>}
+                                {selectedLabels.includes('Chapter') && hadith.chapterName && hadith.chapterName.trim() && <p>{hadith.chapterName}</p>}
                             </div>
     
-                            {selectedLabels.includes('Header') && hadith.header && <p className="hadith-header">{hadith.header}</p>}
+                            {selectedLabels.includes('Header') && hadith.header && hadith.header.trim() && <p className="hadith-header">{hadith.header}</p>}
     
                             <div className="content">
-                                {hadith.hadith_english && <p>{hadith.hadith_english}</p>}
+                                {hadith.hadith_english && hadith.hadith_english.trim() && <p>{hadith.hadith_english}</p>}
                             </div>
     
-                            {selectedLabels.includes('Ref No.') && hadith.refno && <p className="hadith-ref">{hadith.refno}</p>}
+                            {selectedLabels.includes('Ref No.') && hadith.refno && hadith.refno.trim() && <p className="hadith-ref">{hadith.refno}</p>}
                         </>
                     )}
     
                     <div className="dropdown-container">
-                        <button className='next-button' onClick={() => this.handleBookChange({ target: { value: this.state.hadithbook } })}>Next Hadith</button>
+                        <button className='next-button' onClick={ async () => {
+                            await this.fetchHadith();
+                            await this.fetchBackgroundsIfNeeded();
+                        }}>Next Hadith</button>
                         <label htmlFor="hadithbook" className="dropdown-label"></label>
                         <select id="hadithbook" className="dropdown" onChange={this.handleBookChange} value={this.state.hadithbook}>
                             <option value="bukhari">Sahih Al-Bukhari</option>
