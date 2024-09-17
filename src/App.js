@@ -184,11 +184,19 @@ class App extends React.Component {
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                
+    
+                    // After the download is complete, show the notification
+                    this.setState({ notification: 'Hadith has been downloaded.' });
+    
+                    // Hide the notification after 3 seconds
+                    setTimeout(() => {
+                        this.setState({ notification: '' });
+                    }, 3000);
+    
                     elementsToHide.forEach(el => {
                         if (el) el.classList.remove('hide-for-snapshot');
                     });
-                
+    
                     if (backgroundWrapper) {
                         backgroundWrapper.style.opacity = '';
                     }
@@ -266,18 +274,18 @@ class App extends React.Component {
                     ) : (
                         <>
                             <div className="book">
-                                {selectedLabels.includes('Book') && hadith.book && hadith.book.trim() && <p>{hadith.book}</p>}
-                                {selectedLabels.includes('Book Name') && hadith.bookName && hadith.bookName.trim() && <p>{hadith.bookName}</p>}
-                                {selectedLabels.includes('Chapter') && hadith.chapterName && hadith.chapterName.trim() && <p>{hadith.chapterName}</p>}
+                                {selectedLabels.includes('Book') && hadith.book && hadith.book.trim() !== '' && <p>{hadith.book}</p>}
+                                {selectedLabels.includes('Book Name') && hadith.bookName && hadith.bookName.trim() !== '' && <p>{hadith.bookName}</p>}
+                                {selectedLabels.includes('Chapter') && hadith.chapterName && hadith.chapterName.trim() !== '' && <p>{hadith.chapterName}</p>}
                             </div>
     
-                            {selectedLabels.includes('Header') && hadith.header && hadith.header.trim() && <p className="hadith-header">{hadith.header}</p>}
+                            {selectedLabels.includes('Header') && hadith.header && hadith.header.trim() !== '' && <p className="hadith-header">{hadith.header}</p>}
     
                             <div className="content">
-                                {hadith.hadith_english && hadith.hadith_english.trim() && <p>{hadith.hadith_english}</p>}
+                                {hadith.hadith_english && hadith.hadith_english.trim() !== '' && <p>{hadith.hadith_english}</p>}
                             </div>
     
-                            {selectedLabels.includes('Ref No.') && hadith.refno && hadith.refno.trim() && <p className="hadith-ref">{hadith.refno}</p>}
+                            {selectedLabels.includes('Ref No.') && hadith.refno && hadith.refno.trim() !== '' && <p className="hadith-ref">{hadith.refno}</p>}
                         </>
                     )}
     
