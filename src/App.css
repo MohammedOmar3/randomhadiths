@@ -118,13 +118,13 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-size: cover;
+    width: 100vw;
+    height: calc(100vh); 
+    background-size: cover; 
     background-position: center;
     background-repeat: no-repeat;
-    transition: opacity 1s ease-in-out; 
-    opacity: 1; 
+    transition: opacity 1s ease-in-out;
+    opacity: 1;
 }
 
 .background-wrapper.fade-in {
@@ -451,6 +451,58 @@ h4, h3, h2, h5 {
     margin-right: 8px;
 }
 
+@media (max-width: 0px){
+    .card {
+        width: 55%;
+        padding: 5%;
+    }
+
+    .content {
+        font-size: 10px;
+    }
+
+    .button, .button-next, .next-button  {
+        font-size: calc(1.2rem + 0.7vw); 
+    }
+
+    .navbar a {
+        font-size: px;
+        font-size: calc(1.9rem + 0.5vw); 
+    }
+
+    .notification {
+        top: 180px;
+    }
+
+    h4, h3, h2, h5 {
+        margin: 5px 0;
+        font-size: calc(2.5rem + 0.5vw);
+    }
+
+    .book p {
+        font-size: calc(0.8rem + 0.5vw);  
+    }
+
+    .hadith-header, .hadith-ref, .content {
+        font-size: calc(0.8rem + 0.5vw);
+        line-height: 1.2; 
+        margin: 0px 0; 
+        padding-top: -5px;
+    }
+
+    .content p {
+        font-size: calc(1.0rem + 0.5vw); 
+    }
+
+    .dropdown-container {
+        max-width: 100%;
+    }
+
+    .filter-dropdown {
+        bottom: 50px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .card {
@@ -463,12 +515,12 @@ h4, h3, h2, h5 {
     }
 
     .button, .button-next, .next-button {
-        font-size: calc(0.6rem + 0.5vw); /* Scales with viewport width */
+        font-size: calc(0.6rem + 0.5vw); 
     }
 
     .navbar a {
         font-size: 14px;
-        font-size: calc(0.9rem + 0.5vw); /* Scales with viewport width */
+        font-size: calc(0.9rem + 0.5vw);
     }
 
     .notification {
@@ -488,7 +540,7 @@ h4, h3, h2, h5 {
     .navbar {
         padding-top: 20px;
         font-size: 14px;
-        font-size: calc(0.8rem + 0.5vw); /* Scales with viewport width */
+        font-size: calc(0.8rem + 0.5vw); 
     }
 
     .navbar a {
@@ -518,5 +570,73 @@ h4, h3, h2, h5 {
 
     .filter-icon {
         margin-bottom: -10px;
+    }
+}
+
+@media only screen and (orientation: landscape) {
+    .background-wrapper {
+        height: 100vh;
+        width: 100vw; 
+        background-size: cover;
+    }
+}
+
+/* Media query for very small heights (like iPhone 12 Pro landscape) */
+@media only screen and (max-height: 650px) and (orientation: landscape) {
+    .navbar {
+        position: absolute; 
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 0; 
+    }
+
+    .notification {
+        top: 100px;
+    }
+
+    .background-wrapper {
+        position: absolute; 
+        top: 0;
+        left: 0;
+        width: 100vw; 
+        height: 100vh; 
+        background-size: cover; 
+        background-position: center; 
+        background-repeat: no-repeat; 
+    }
+
+    .app {
+        padding-top: 20px; 
+    }
+
+    .card {
+        margin-top: 10px; 
+        width: 90%;
+        padding: 2%; 
+    }
+
+    h4, h3, h2, h5 {
+        margin: 5px 0; 
+        font-size: calc(0.5rem + 0.5vw);
+    }
+
+    .hadith-header, .hadith-ref, .content {
+        font-size: calc(0.5rem + 0.5vw); 
+        line-height: 1.2; 
+        margin: 0px 0; 
+        padding-top: -5px;
+    }
+
+    .content p {
+        font-size: calc(0.4rem + 0.5vw); 
+    }
+
+    .buttons {
+        bottom: 10px; 
+    }
+
+    .dropdown-container {
+        bottom: 20px; 
     }
 }
