@@ -17,10 +17,11 @@ This project is a simple web application that fetches Hadiths (sayings of the Pr
 - Snapshot the hadith with the background to be used to shared on social media platforms.
 - Copy the hadith on screen to clipboard which can be pasted anywhere.
 - Website is responsive to all devices with all functionality working from any device that you use.
+- Hadith's are now shareable through a URL which can be used to fetch that specific hadith. 
 
 ## Upcoming Features
-- Share the hadith, but setting hadith id on the url which will load up that hadith on open.
 - Match the background with the context of the hadith using API
 
 ## Bug
-- Filtering the hadith book will not search the hadith of the book it's been filtered to but the book previously set. This will need to be fixed so that the hadith of the book is fetched when new book has been chosen. 
+- Filtering the hadith book will not search the hadith of the book it's been filtered to but the book previously set. This will need to be fixed so that the hadith of the book is fetched when new book has been chosen. [FIXED]
+- Null values given to some of the hadith content on the card. I want it to not display rather than be given a null value. 

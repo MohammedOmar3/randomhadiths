@@ -24,10 +24,46 @@ class App extends React.Component {
         selectedLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'],
         isFlashing: false,
         notification: '',
+        fromShareableLink: false
     };
 
+    filterDropdownRef = React.createRef();
+
     async componentDidMount() {
-        await this.loadData();
+        const path = window.location.pathname;
+        const pathParts = path.split('/').filter(part => part); 
+
+        if (pathParts.length === 2) {
+            const [book, id] = pathParts;
+            this.setState({ 
+                hadithbook: book, 
+                hadithid: id,
+                fromShareableLink: true
+            }, async () => {
+                await this.loadData();
+                this.cleanUpUrl();
+                this.setState({ fromShareableLink: false });
+            });
+        } else {
+            await this.loadData();
+        }
+
+        document.addEventListener('mousedown', this.handleClickOutside);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
+    }
+
+    handleClickOutside = (event) => {
+        if (this.filterDropdownRef.current && !this.filterDropdownRef.current.contains(event.target)) {
+            this.setState({ filterOpen: false });
+        }
+    }
+
+    cleanUpUrl = () => {
+        const cleanUrl = `${window.location.origin}/`;
+        window.history.replaceState(null, '', cleanUrl);
     }
 
     loadData = async () => {
@@ -111,15 +147,20 @@ class App extends React.Component {
     };
 
     fetchHadith = async () => {
+        const { hadithid, hadithbook, fromShareableLink } = this.state;
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HADITH_API_URL}/${this.state.hadithbook}`);
+            let url = `${process.env.REACT_APP_HADITH_API_URL}/${hadithbook}`;
+            console.log('this is the hadith id' + hadithid);
+            if (hadithid && fromShareableLink) {
+                url += `/${hadithid}`;
+            }
+            const response = await axios.get(url);
             const hadith = response.data.data;
             console.log(response.data.data.id);
             if (hadith.hadith_english && hadith.hadith_english.length > 500) {
                 await this.fetchHadith();
             } else {
-
-                this.setState({ hadithid: response.data.data.id, hadith });
+                this.setState({ hadithid: hadith.id, hadith });
                 this.summarizeText(hadith.hadith_english);
             }
         } catch (error) {
@@ -130,8 +171,8 @@ class App extends React.Component {
     handleBookChange = async (event) => {
         const newBook = event.target.value;
         this.setState({ hadithbook: newBook, loading: true }, async () => {
-            await this.fetchHadith();        // Fetch new hadith
-            await this.fetchBackgroundsIfNeeded();  // Fetch new background
+            await this.fetchHadith(); 
+            await this.fetchBackgroundsIfNeeded();  
             this.setState({ loading: false });
         });
     };
@@ -185,10 +226,8 @@ class App extends React.Component {
                     link.click();
                     document.body.removeChild(link);
     
-                    // After the download is complete, show the notification
                     this.setState({ notification: 'Hadith has been downloaded.' });
     
-                    // Hide the notification after 3 seconds
                     setTimeout(() => {
                         this.setState({ notification: '' });
                     }, 3000);
@@ -241,6 +280,21 @@ class App extends React.Component {
             });
     };
 
+    copyLinkToShare = () => {
+        const { hadithbook, hadithid } = this.state;
+        const shareURL = `${window.location.origin}/${hadithbook}/${hadithid}`;
+        
+        navigator.clipboard.writeText(shareURL)
+            .then(() => {
+                this.setState({ notification: 'Hadith shareable URL copied to clipboard!' });
+                setTimeout(() => this.setState({ notification: '' }), 3000);
+            })
+            .catch(err => {
+                this.setState({ notification: 'Error copying URL to clipboard' });
+                setTimeout(() => this.setState({ notification: '' }), 3000);
+            });
+    };
+
     render() {
         const { hadith, background, loading, isBackgroundLoading, isHadithReady, filterOpen, availableLabels, selectedLabels, notification } = this.state;
     
@@ -249,6 +303,7 @@ class App extends React.Component {
                 <Navbar 
                     onDownload={this.downloadSnapshot}
                     onCopy={this.copyToClipboard}
+                    onShare={this.copyLinkToShare}
                  />
     
                 {notification && (
@@ -311,7 +366,7 @@ class App extends React.Component {
                     </button>
     
                     {filterOpen && (
-                        <div className="filter-dropdown">
+                        <div className="filter-dropdown" ref={this.filterDropdownRef}>
                             {availableLabels.map(label => (
                                 <label key={label} className="filter-item">
                                     <input 
