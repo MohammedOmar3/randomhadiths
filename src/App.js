@@ -131,7 +131,7 @@ class App extends React.Component {
                 params: {
                     client_id: process.env.REACT_APP_UNSPLASH_API_KEY,
                     query: 'nature, architecture, islam, nature wonders',
-                    count: 10 
+                    count: 30 
                 }
             });
             const backgrounds = response.data.map(img => img.urls.full);
