@@ -23,5 +23,5 @@ This project is a simple web application that fetches Hadiths (sayings of the Pr
 - Match the background with the context of the hadith using API
 
 ## Bug
-- Filtering the hadith book will not search the hadith of the book it's been filtered to but the book previously set. This will need to be fixed so that the hadith of the book is fetched when new book has been chosen. [FIXED]
+- ~~Filtering the hadith book will not search the hadith of the book it's been filtered to but the book previously set. This will need to be fixed so that the hadith of the book is fetched when new book has been chosen.~~ [FIXED]
 - Null values given to some of the hadith content on the card. I want it to not display rather than be given a null value. 
