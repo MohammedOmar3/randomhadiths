@@ -24,7 +24,8 @@ class App extends React.Component {
         selectedLabels: ['Book', 'Book Name', 'Chapter', 'Header', 'Ref No.'],
         isFlashing: false,
         notification: '',
-        fromShareableLink: false
+        fromShareableLink: false,
+        watermark: false,
     };
 
     filterDropdownRef = React.createRef();
@@ -208,7 +209,7 @@ class App extends React.Component {
             backgroundWrapper.style.opacity = '1';
         }
     
-        this.setState({ isFlashing: true }, () => {
+        this.setState({ isFlashing: true, watermark: true }, () => {
             setTimeout(() => {
                 this.setState({ isFlashing: false });
     
@@ -227,9 +228,8 @@ class App extends React.Component {
                     document.body.removeChild(link);
     
                     this.setState({ notification: 'Hadith has been downloaded.' });
-    
                     setTimeout(() => {
-                        this.setState({ notification: '' });
+                        this.setState({ notification: '', watermark: false });
                     }, 3000);
     
                     elementsToHide.forEach(el => {
@@ -296,7 +296,7 @@ class App extends React.Component {
     };
 
     render() {
-        const { hadith, background, loading, isBackgroundLoading, isHadithReady, filterOpen, availableLabels, selectedLabels, notification } = this.state;
+        const { hadith, background, loading, isBackgroundLoading, isHadithReady, filterOpen, availableLabels, selectedLabels, notification, watermark } = this.state;
     
         return (
             <div className="app">
@@ -339,8 +339,9 @@ class App extends React.Component {
                             <div className="content">
                                 {hadith.hadith_english && hadith.hadith_english.trim() !== '' && <p>{hadith.hadith_english}</p>}
                             </div>
-    
+                            
                             {selectedLabels.includes('Ref No.') && hadith.refno && hadith.refno.trim() !== '' && <p className="hadith-ref">{hadith.refno}</p>}
+                            {watermark && <p className='watermark'>created using nstxo.com</p>}
                         </>
                     )}
     
