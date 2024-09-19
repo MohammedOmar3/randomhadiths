@@ -120,8 +120,8 @@
     position: fixed; /* Make it fixed so it doesn't scroll with content */
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh; /* Full viewport height */
+    min-width: 100vw;
+    min-height: 100vh;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -575,10 +575,17 @@ h4, h3, h2, h5 {
 }
 
 @media only screen and (orientation: landscape) {
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
     .background-wrapper {
-        height: 100%; /* Full height to cover the entire page */
-        min-height: 100vh; /* Ensure it covers at least the viewport height */
+        min-width: 100vw;
+        min-height: 100vh;
         background-size: cover;
+        background-position: center;
     }
 }
 
@@ -588,8 +595,8 @@ h4, h3, h2, h5 {
         position: fixed; /* Ensure background stays fixed */
         top: 0;
         left: 0;
-        width: 100vw;
-        height: 100vh; /* Full height of viewport */
+        min-width: 100vw;
+        min-height: 100vh;
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
