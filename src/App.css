@@ -547,6 +547,12 @@ h4, h3, h2, h5 {
 }
 
 @media (max-width: 480px) {
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
     .navbar {
         padding-top: 20px;
         font-size: 14px;
@@ -557,8 +563,24 @@ h4, h3, h2, h5 {
         margin-right: 10px;
     }
 
-    .background-wrapper{
+    .app {
+        position: relative;
+        flex-direction: column; 
+        min-height: 100vh; 
+        overflow-y: auto; 
+        z-index: 1;
+    }
+
+    .background-wrapper {
         position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        min-width: 100vw;
+        min-height: 100vh;
+        background-repeat: no-repeat;
+        z-index: -1;
     }
 
     .overlay{
