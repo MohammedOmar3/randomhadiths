@@ -329,18 +329,30 @@ class App extends React.Component {
                     ) : (
                         <>
                             <div className="book">
-                                {selectedLabels.includes('Book') && hadith.book && hadith.book.trim() !== '' && <p>{hadith.book}</p>}
-                                {selectedLabels.includes('Book Name') && hadith.bookName && hadith.bookName.trim() !== '' && <p>{hadith.bookName}</p>}
-                                {selectedLabels.includes('Chapter') && hadith.chapterName && hadith.chapterName.trim() !== '' && <p>{hadith.chapterName}</p>}
+                                {selectedLabels.includes('Book') && hadith.book && hadith.book.trim() !== '' && hadith.book !== 'null' && (
+                                    <p>{hadith.book}</p>
+                                )}
+                                {selectedLabels.includes('Book Name') && hadith.bookName && hadith.bookName.trim() !== '' && hadith.bookName !== 'null' && (
+                                    <p>{hadith.bookName}</p>
+                                )}
+                                {selectedLabels.includes('Chapter') && hadith.chapterName && hadith.chapterName.trim() !== '' && hadith.chapterName !== 'null' && (
+                                    <p>{hadith.chapterName}</p>
+                                )}
                             </div>
     
-                            {selectedLabels.includes('Header') && hadith.header && hadith.header.trim() !== '' && <p className="hadith-header">{hadith.header}</p>}
+                            {selectedLabels.includes('Header') && hadith.header && hadith.header.trim() !== '' && hadith.header !== 'null' && (
+                                <p className="hadith-header">{hadith.header}</p>
+                            )}
     
                             <div className="content">
-                                {hadith.hadith_english && hadith.hadith_english.trim() !== '' && <p>{hadith.hadith_english}</p>}
+                                {hadith.hadith_english && hadith.hadith_english.trim() !== '' && hadith.hadith_english !== 'null' && (
+                                    <p>{hadith.hadith_english}</p>
+                                )}
                             </div>
                             
-                            {selectedLabels.includes('Ref No.') && hadith.refno && hadith.refno.trim() !== '' && <p className="hadith-ref">{hadith.refno}</p>}
+                            {selectedLabels.includes('Ref No.') && hadith.refno && hadith.refno.trim() !== '' && hadith.refno !== 'null' && (
+                                <p className="hadith-ref">{hadith.refno}</p>
+                            )}
                             {watermark && <p className='watermark'>created using nstxo.com</p>}
                         </>
                     )}

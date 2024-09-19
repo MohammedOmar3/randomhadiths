@@ -58,19 +58,21 @@
 #root, html, body {
     margin: 0;
     padding: 0;
-    height: 100vh;
+    height: 100%;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
 }
 
 .app {
-    height: 100%;
+    position: relative;
+    min-height: 100vh; /* Ensure that the app content is scrollable */
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-    position: relative;
-    overflow: hidden; 
+    overflow: visible; /* Allow content to overflow if needed */
+    z-index: 1; /* Ensure app content is above the background */
 }
 
 .hide-for-snapshot {
@@ -115,16 +117,15 @@
 }
 
 .background-wrapper {
-    position: absolute;
+    position: fixed; /* Make it fixed so it doesn't scroll with content */
     top: 0;
     left: 0;
     width: 100vw;
-    height: calc(100vh); 
-    background-size: cover; 
+    height: 100vh; /* Full viewport height */
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    transition: opacity 1s ease-in-out;
-    opacity: 1;
+    z-index: -1; /* Make sure it's behind everything */
 }
 
 .background-wrapper.fade-in {
@@ -138,13 +139,13 @@
 }
 
 .overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7); 
-    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1; /* Ensure the overlay is on top of the background */
 }
 
 /* Navbar styling */
@@ -575,14 +576,26 @@ h4, h3, h2, h5 {
 
 @media only screen and (orientation: landscape) {
     .background-wrapper {
-        height: 100vh;
-        width: 100vw; 
+        height: 100%; /* Full height to cover the entire page */
+        min-height: 100vh; /* Ensure it covers at least the viewport height */
         background-size: cover;
     }
 }
 
 /* Media query for very small heights (like iPhone 12 Pro landscape) */
 @media only screen and (max-height: 650px) and (orientation: landscape) {
+    .background-wrapper {
+        position: fixed; /* Ensure background stays fixed */
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh; /* Full height of viewport */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1; /* Ensure it's behind all other content */
+    }
+
     .navbar {
         position: absolute; 
         top: 0;
@@ -595,19 +608,11 @@ h4, h3, h2, h5 {
         top: 100px;
     }
 
-    .background-wrapper {
-        position: absolute; 
-        top: 0;
-        left: 0;
-        width: 100vw; 
-        height: 100vh; 
-        background-size: cover; 
-        background-position: center; 
-        background-repeat: no-repeat; 
-    }
-
     .app {
-        padding-top: 20px; 
+        position: relative;
+        padding-top: 20px;
+        min-height: 100vh; /* Ensures the app content is scrollable */
+        z-index: 1; /* Ensures it stays above the background */
     }
 
     .card {
