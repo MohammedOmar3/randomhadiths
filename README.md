@@ -1,5 +1,5 @@
 # Random Hadith Fetcher
-
+[https://nxstxo.netflify.app](https://nstxo.netlify.app/)
 This project is a simple web application that fetches Hadiths (sayings of the Prophet Muhammad) from an Open API source and displays them in English.
 
 ![image](https://github.com/user-attachments/assets/d7ab6b27-8a47-424b-abcc-bcfaeacd6bd6)
